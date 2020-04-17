@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys
 import numpy as np
-from analysis.generator import ModelGConvTranspose, NOISE_DIM
+from analysis.vae import VAE
 from tqdm import tqdm
 import torch
 import torch.nn as nn
@@ -19,8 +19,8 @@ def main():
     data_test = np.load(input_dir + '/data_test.npz', allow_pickle=True)
     test_data_path_out = output_dir + '/data_test_prediction.npz'
     
-    generator_cpu = ModelGConvTranspose(NOISE_DIM)
-    generator_cpu.load_state_dict(torch.load(os.path.dirname(os.path.abspath(__file__)) + '/gan.pt'))
+    generator_cpu = VAE()
+    generator_cpu.load_state_dict(torch.load(os.path.dirname(os.path.abspath(__file__)) + '/vae.pt'))
     generator_cpu.eval()
     
     # val
@@ -33,8 +33,8 @@ def main():
     with torch.no_grad():
         EnergyDeposit_val = []
         for ParticleMomentum_ParticlePoint_val_batch in tqdm(calo_dataloader_val):
-            noise = torch.randn(len(ParticleMomentum_ParticlePoint_val_batch[0]), NOISE_DIM)
-            EnergyDeposit_val_batch = generator_cpu(noise, ParticleMomentum_ParticlePoint_val_batch[0]).detach().numpy()
+            noise = torch.tensor(np.random.normal(0,1,size=(len(ParticleMomentum_ParticlePoint_val_batch[0]), 30))).float()
+            EnergyDeposit_val_batch = generator_cpu.decode(noise, ParticleMomentum_ParticlePoint_val_batch[0]).detach().numpy()
             EnergyDeposit_val.append(EnergyDeposit_val_batch)
         np.savez_compressed(val_data_path_out, 
                             EnergyDeposit=np.concatenate(EnergyDeposit_val, axis=0).reshape(-1, 30, 30))
@@ -53,8 +53,8 @@ def main():
     with torch.no_grad():
         EnergyDeposit_test = []
         for ParticleMomentum_ParticlePoint_test_batch in tqdm(calo_dataloader_test):
-            noise = torch.randn(len(ParticleMomentum_ParticlePoint_test_batch[0]), NOISE_DIM)
-            EnergyDeposit_test_batch = generator_cpu(noise, ParticleMomentum_ParticlePoint_test_batch[0]).detach().numpy()
+            noise = torch.tensor(np.random.normal(0,1,size=(len(ParticleMomentum_ParticlePoint_test_batch[0]), 30))).float()
+            EnergyDeposit_test_batch = generator_cpu.decode(noise, ParticleMomentum_ParticlePoint_test_batch[0]).detach().numpy()
             EnergyDeposit_test.append(EnergyDeposit_test_batch)
         np.savez_compressed(test_data_path_out, 
                             EnergyDeposit=np.concatenate(EnergyDeposit_test, axis=0).reshape(-1, 30, 30))
