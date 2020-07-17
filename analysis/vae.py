@@ -30,8 +30,8 @@ class VAE(nn.Module):
 
         self.fc1 = nn.Linear(h_dim + 5, z_dim)
         self.fc2 = nn.Linear(h_dim + 5, z_dim)
-        self.fc3 = nn.Linear(z_dim, h_dim)
-        self.fc4 = nn.Linear(h_dim + 5, 512)
+        self.fc3 = nn.Linear(z_dim + 5, h_dim)
+        self.fc4 = nn.Linear(h_dim, 512)
         self.fc5 = nn.Linear(512, 3200)
 
         self.conv1t = nn.ConvTranspose2d(128, 128, kernel_size=(3, 3))
@@ -69,8 +69,8 @@ class VAE(nn.Module):
         return mu + eps * std
 
     def decode(self, z, params):
-        z = F.leaky_relu(self.fc3(z))
-        z = F.leaky_relu(self.fc4(torch.cat([z, params], dim=1)))
+        z = F.leaky_relu(self.fc3(torch.cat([z, params], dim=1)))
+        z = F.leaky_relu(self.fc4(z))
         z = F.leaky_relu(self.fc5(z))
         z = z.view(-1, 128, 5, 5)						# 5x5x128
         z = F.leaky_relu(self.bn1t(self.conv1t(z)))		# 7x7x128
