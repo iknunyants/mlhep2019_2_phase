@@ -30,7 +30,7 @@ def main():
     ParticlePoint_val = torch.tensor(data_val['ParticlePoint'][:, :2]).float()
     ParticleMomentum_ParticlePoint_val = torch.cat([ParticleMomentum_val, ParticlePoint_val], dim=1)
     calo_dataset_val = utils.TensorDataset(ParticleMomentum_ParticlePoint_val)
-    calo_dataloader_val = torch.utils.data.DataLoader(calo_dataset_val, batch_size=1024, shuffle=False)
+    calo_dataloader_val = torch.utils.data.DataLoader(calo_dataset_val, batch_size=1024, shuffle=True)
 
     with torch.no_grad():
         EnergyDeposit_val = []
@@ -50,7 +50,7 @@ def main():
     ParticlePoint_test = torch.tensor(data_test['ParticlePoint'][:, :2]).float()
     ParticleMomentum_ParticlePoint_test = torch.cat([ParticleMomentum_test, ParticlePoint_test], dim=1)
     calo_dataset_test = utils.TensorDataset(ParticleMomentum_ParticlePoint_test)
-    calo_dataloader_test = torch.utils.data.DataLoader(calo_dataset_test, batch_size=1024, shuffle=False)
+    calo_dataloader_test = torch.utils.data.DataLoader(calo_dataset_test, batch_size=1024, shuffle=True)
 
     with torch.no_grad():
         EnergyDeposit_test = []
