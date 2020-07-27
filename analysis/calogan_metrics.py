@@ -1,5 +1,6 @@
 import numpy as np
 def get_assymetry(imgs, ps, points, orthog=False):
+    # асимметрия ливня вдоль и поперек направнения наклона
     assym_res = []
     zoff = 25
     
@@ -37,6 +38,7 @@ def zz_to_line(zz):
     return np.clip(res, 0, 1)
 
 def get_shower_width(data, ps, points, orthog=False):
+    # ширина ливня вдоль и поперек направления
     res = []
     spreads = []
     
